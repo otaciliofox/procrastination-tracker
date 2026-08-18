@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.hilt)
 }
 
 // Signing credentials live in keystore.properties at the repo root: git-ignored, never committed,
@@ -115,12 +116,17 @@ dependencies {
     // Wearable Data Layer API - lets the phone receive synced sessions from the watch.
     implementation(libs.play.services.wearable)
 
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
+
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(composeBom)
     testImplementation(libs.compose.ui.test.junit4)
     testImplementation(libs.roborazzi)

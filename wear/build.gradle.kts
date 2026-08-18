@@ -3,6 +3,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 // Same keystore.properties the phone module reads, deliberately: see the note on the release
@@ -108,6 +110,10 @@ dependencies {
     // Starts an activity on the paired phone ("ver/editar no celular").
     implementation(libs.wear.remote.interactions)
     implementation(libs.play.services.wearable)
+
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
 
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)

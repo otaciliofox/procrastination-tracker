@@ -35,7 +35,11 @@ dependencies {
     implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.room.runtime)
+    // `api`, not `implementation`: TrackerDatabase is part of this module's public surface and it
+    // extends RoomDatabase, so consumers need that type on their compile classpath. With Hilt in
+    // the picture this stopped being theoretical -- the generated provider factory failed to
+    // compile in :wear with "class file for androidx.room.RoomDatabase not found".
+    api(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
