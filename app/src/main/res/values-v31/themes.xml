@@ -1,0 +1,19 @@
+<resources>
+    <!--
+      Android 12+ draws its own splash from these attributes instead of the window background,
+      which is exactly where the white flash was coming from.
+    -->
+    <style name="Theme.ProcrastinationTracker" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/canvas</item>
+        <item name="android:colorBackground">@color/canvas</item>
+        <item name="android:statusBarColor">@color/canvas_top</item>
+        <item name="android:navigationBarColor">@color/canvas</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:colorAccent">@color/accent_blue</item>
+
+        <item name="android:windowSplashScreenBackground">@color/canvas</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/canvas</item>
+    </style>
+</resources>

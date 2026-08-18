@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The XML half of the design system. The source of truth is BoardTokens in `:core` (shared with
+  the watch); these mirror the few values Android needs before Compose exists: window
+  background, splash, system bars. Keep them in sync with BoardTokens by hand, there are four.
+-->
+<resources>
+    <color name="canvas">#FF0A1020</color>
+    <color name="canvas_top">#FF101A33</color>
+    <color name="ink">#FFE9EFFB</color>
+    <color name="accent_blue">#FF3B82F6</color>
+</resources>

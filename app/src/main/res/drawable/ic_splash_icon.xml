@@ -1,0 +1,16 @@
+<!--
+  Splash mark: the same two bands as the launcher icon, drawn inside the 108dp box the system
+  splash expects (it crops to the inner circle, so everything stays well within it).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF3B82F6"
+        android:pathData="M33,42 L75,42 A5,5 0 0 1 80,47 L80,54 A5,5 0 0 1 75,59 L33,59 A5,5 0 0 1 28,54 L28,47 A5,5 0 0 1 33,42 Z" />
+    <path
+        android:fillColor="#FFF43F5E"
+        android:pathData="M33,63 L56,63 A5,5 0 0 1 61,68 L61,75 A5,5 0 0 1 56,80 L33,80 A5,5 0 0 1 28,75 L28,68 A5,5 0 0 1 33,63 Z" />
+</vector>

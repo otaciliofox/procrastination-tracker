@@ -1,0 +1,130 @@
+<resources>
+    <string name="app_name">Procrastination Tracker</string>
+    <string name="notification_channel_name">Timer</string>
+    <string name="notification_channel_description">Mostra a contagem de foco/intervalo em andamento</string>
+    <string name="phase_focus">Foco</string>
+    <string name="phase_break">Intervalo</string>
+
+    <string name="tracker_notification_channel_name">Tracker de Atividades</string>
+    <string name="tracker_notification_channel_description">Mostra a atividade ativa e o tempo da sessão atual</string>
+    <string name="tracker_notification_action_pause">Pausar</string>
+    <string name="tracker_notification_action_stop">Parar</string>
+    <string name="tracker_notification_idle_title">Tracker pausado</string>
+    <string name="tracker_notification_idle_text">Toque numa atividade para retomar</string>
+    <string name="tracker_notification_idle_last">Última atividade: %1$s</string>
+    <string name="tracker_notification_running">Rastreando agora</string>
+    <string name="tracker_notification_action_resume">Retomar</string>
+    <string name="tracker_notification_action_switch">Trocar</string>
+
+    <string name="home_title">Procrastination Tracker</string>
+    <string name="home_subtitle">Escolha como quer medir o seu tempo hoje.</string>
+    <string name="home_open">ABRIR</string>
+    <string name="home_mode_timer_title">Modo Timer</string>
+    <string name="home_mode_timer_subtitle">52/17, Pomodoro ou 45/15 com alarme</string>
+    <string name="home_mode_tracker_title">Modo Tracker</string>
+    <string name="home_mode_tracker_subtitle">Cronômetro livre por categoria, sem alarme</string>
+
+    <string name="tracker_menu_pause">Pausar</string>
+    <string name="tracker_menu_stop">Parar</string>
+    <string name="tracker_menu_restart">Reiniciar</string>
+    <string name="tracker_menu_exit">Sair do app</string>
+    <string name="tracker_menu_title">O que você quer fazer?</string>
+
+    <string name="tracker_idle_label">Nenhuma atividade ativa</string>
+    <string name="tracker_new_custom">Novo perfil Custom</string>
+    <string name="tracker_save_as_custom">Salvar como novo Custom</string>
+    <string name="tracker_keep_awake">Manter tela ligada</string>
+    <string name="tracker_lock_now">Bloquear tela agora</string>
+
+    <string name="tracker_edit_profile">Editar</string>
+    <string name="tracker_profile_name">Nome do perfil</string>
+    <string name="tracker_slice_name">Nome da atividade</string>
+    <string name="tracker_add_slice">Adicionar atividade</string>
+    <string name="tracker_remove_slice">Remover</string>
+    <string name="tracker_save">Salvar</string>
+    <string name="tracker_cancel">Cancelar</string>
+    <string name="tracker_delete_profile">Excluir perfil</string>
+    <string name="tracker_readonly_notice">Duo e Tri não podem ser sobrescritos. Editar a estrutura e salvar cria um novo perfil Custom com essas mudanças.</string>
+    <string name="tracker_new_profile_from_scratch">Criar do zero</string>
+    <string name="tracker_new_profile_name_hint">Nome do novo perfil</string>
+    <string name="tracker_new_profile_name_example">Ex.: Estudo da noite</string>
+    <string name="tracker_phone_only_warning">Acima de %1$d atividades o perfil funciona só no celular; o relógio não consegue exibi-lo bem.</string>
+    <string name="tracker_today">Hoje</string>
+    <string name="tracker_week">Esta semana (desde domingo)</string>
+    <string name="tracker_empty_history">Nada por aqui, rastreie suas atividades primeiro</string>
+    <string name="tracker_history_title">Evolução e Estatísticas</string>
+    <string name="tracker_tab_general">Visão Geral</string>
+    <string name="tracker_tab_watch">Relógio</string>
+    <string name="tracker_no_device_week">Nada registrado neste aparelho esta semana.</string>
+    <string name="tracker_no_device_past_weeks">Este aparelho ainda não tem semanas fechadas.</string>
+    <string name="tracker_current_week">Semana Atual</string>
+    <string name="tracker_past_weeks">Semanas Anteriores</string>
+    <string name="tracker_procrastinating">Procrastinando</string>
+    <string name="tracker_active">Produtivo / Outras</string>
+    <string name="tracker_total_tracked">Total Rastreado</string>
+    <string name="tracker_view_weekly_history">Ver histórico semanal</string>
+    <string name="tracker_select_icon">Escolher ícone</string>
+    <string name="tracker_no_past_weeks">O histórico consolidado de semanas anteriores aparecerá aqui a cada domingo.</string>
+    <string name="tracker_no_profile_history">Nenhuma atividade registrada neste perfil esta semana.</string>
+    <string name="tracker_no_profile_past_weeks">Este perfil ainda não tem semanas fechadas.</string>
+
+    <string name="tracker_section_activities">Atividades</string>
+    <string name="tracker_section_profile">Perfil</string>
+    <string name="tracker_section_session">Sessão em andamento</string>
+    <string name="tracker_section_screen">Tela</string>
+    <string name="tracker_rename_activity">Renomear atividade</string>
+    <string name="tracker_rename_hint">Dica: toque e segure numa faixa do quadro para renomear direto.</string>
+    <string name="tracker_new_profile_short">Novo</string>
+    <string name="tracker_edit_profile_full">Editar perfil (atividades e ícones)</string>
+    <string name="tracker_go_home">Voltar ao início</string>
+
+    <string name="timer_notification_running">Em andamento</string>
+    <string name="timer_notification_paused">Pausado em %1$s</string>
+
+    <string name="timer_alert_channel_name">Fim de ciclo</string>
+    <string name="timer_alert_channel_description">Avisa quando um bloco de foco ou de intervalo termina</string>
+    <string name="timer_alert_focus_done">Foco concluído</string>
+    <string name="timer_alert_break_done">Intervalo concluído</string>
+    <string name="timer_alert_next_focus">Agora são %1$d min de foco</string>
+    <string name="timer_alert_next_break">Agora são %1$d min de intervalo</string>
+
+    <string name="timer_permission_title">Posso te avisar quando o ciclo acabar?</string>
+    <string name="timer_permission_body">O cronômetro funciona sem isso, mas sem a notificação você só descobre que o bloco terminou olhando a tela.</string>
+    <string name="timer_permission_allow">Permitir aviso</string>
+    <string name="timer_permission_skip">Continuar sem aviso</string>
+
+    <string name="timer_custom_title">Meu tempo</string>
+    <string name="timer_custom_focus">Foco (min)</string>
+    <string name="timer_custom_short_break">Intervalo curto (min)</string>
+    <string name="timer_custom_long_break">Intervalo longo (min)</string>
+    <string name="timer_custom_cycles">Focos até o intervalo longo</string>
+    <string name="timer_custom_edit">Editar meu tempo</string>
+
+    <string name="timer_summary_title">HOJE NO TIMER</string>
+    <string name="timer_summary_cycles">%1$d ciclos concluídos</string>
+    <string name="timer_summary_cycles_one">1 ciclo concluído</string>
+    <string name="timer_summary_focus">Foco</string>
+    <string name="timer_summary_break">Intervalo</string>
+    <string name="timer_summary_empty">Nenhum ciclo concluído hoje ainda.</string>
+
+    <string name="tracker_notification_permission">Mostrar notificação de controle</string>
+    <string name="tracker_section_quick_controls">Controles rápidos</string>
+    <string name="tracker_add_tile">Adicionar atalho na barra rápida</string>
+    <string name="tracker_bubble_settings">Configurar bolha flutuante</string>
+    <string name="tile_label">Tracker</string>
+    <string name="tile_paused">Pausado</string>
+    <string name="bubble_channel_name">Bolha flutuante</string>
+    <string name="bubble_channel_description">Controle flutuante do tracker por cima de outros apps</string>
+    <string name="tracker_bubble_enabled">Bolha flutuante</string>
+
+    <string name="tracker_adjust_today">Corrigir ou reiniciar o dia</string>
+    <string name="tracker_adjust_fix_title">Corrigir tempo</string>
+    <string name="tracker_adjust_fix_body">Ajuste manualmente as horas de cada atividade de hoje.</string>
+    <string name="tracker_adjust_fix_hint">Digite o tempo real de hoje para cada atividade deste perfil.</string>
+    <string name="tracker_adjust_hours">h</string>
+    <string name="tracker_adjust_minutes">min</string>
+    <string name="tracker_adjust_reset_title">Reiniciar contagem</string>
+    <string name="tracker_adjust_reset_body">Zera o dia deste perfil. Os outros perfis não são afetados.</string>
+    <string name="tracker_adjust_reset_confirm">Isto apaga as sessões de hoje deste perfil. O total do dia passa a ser calculado sem elas; os outros perfis continuam intactos.</string>
+    <string name="tracker_adjust_reset_confirm_action">Reiniciar</string>
+</resources>
