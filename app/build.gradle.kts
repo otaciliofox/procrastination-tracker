@@ -31,12 +31,28 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // Screenshot tests render real Compose screens, so the unit test JVM needs the app's
+    // resources -- strings, themes and drawables all take part in what ends up in the PNG.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
+}
+
+// Roborazzi ships a Gradle plugin, but it still reads AGP's removed `TestedExtension` and so
+// cannot be applied on AGP 9. The plugin only exists to wire record/verify tasks and set this
+// flag -- `captureRoboImage` writes the PNG on its own once the flag is on -- so setting it here
+// keeps the screenshots working and leaves one command (`test`) running the whole suite.
+tasks.withType<Test>().configureEach {
+    systemProperty("roborazzi.test.record", "true")
 }
 
 dependencies {
@@ -66,4 +82,14 @@ dependencies {
     implementation("com.google.android.gms:play-services-wearable:18.2.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core-ktx:1.6.1")
+    testImplementation(composeBom)
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.32.2")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.32.2")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.32.2")
 }
