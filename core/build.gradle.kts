@@ -1,12 +1,12 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlin.jvm)
 }
 
 // Pure Kotlin module (no Android dependency) so it can be shared byte-for-byte
 // between the phone app and the Wear OS app.
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }
 
 // Using explicit compiler-target flags instead of kotlin.jvmToolchain(17): the toolchain

@@ -1,8 +1,8 @@
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
 }
 
 // Same keystore.properties the phone module reads, deliberately: see the note on the release
@@ -83,43 +83,43 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":trackerdata"))
 
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
-    implementation("androidx.activity:activity-compose:1.9.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
 
-    val composeBom = platform("androidx.compose:compose-bom:2024.06.00")
+    val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
     // Icon vector set (androidx.compose.material.icons.Icons) -- not tied to Material2/3, works
     // fine alongside Wear Compose Material's own Icon composable. Needs the EXTENDED artifact,
     // not just -core: -core only ships a curated ~40-icon subset (ArrowBack, Add, MoreVert,
     // PlayArrow, etc.) and does NOT include Pause, History, or Settings, which is exactly the
     // "unresolved reference: Pause" build error this caused. The phone app already depends on
     // material-icons-extended for the same reason (see app/build.gradle.kts).
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.compose.material.icons.extended)
 
     // Compose for Wear OS (different artifact from phone Material3).
-    implementation("androidx.wear.compose:compose-material:1.3.1")
-    implementation("androidx.wear.compose:compose-foundation:1.3.1")
-    implementation("androidx.wear.compose:compose-navigation:1.3.1")
-    implementation("androidx.wear:wear:1.3.0")
+    implementation(libs.wear.compose.material)
+    implementation(libs.wear.compose.foundation)
+    implementation(libs.wear.compose.navigation)
+    implementation(libs.wear)
     // Starts an activity on the paired phone ("ver/editar no celular").
-    implementation("androidx.wear:wear-remote-interactions:1.0.0")
-    implementation("com.google.android.gms:play-services-wearable:18.2.0")
+    implementation(libs.wear.remote.interactions)
+    implementation(libs.play.services.wearable)
 
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.14.1")
-    testImplementation("androidx.test:core-ktx:1.6.1")
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core.ktx)
     testImplementation(composeBom)
-    testImplementation("androidx.compose.ui:ui-test-junit4")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.32.2")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.32.2")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.32.2")
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit.rule)
 }
 
 // Same reason as the phone module: Roborazzi's Gradle plugin cannot load on AGP 9, and this flag
