@@ -1,111 +1,152 @@
+<div align="center">
+
 # Procrastination Tracker
 
-Recriação do app **Procrastination Timer** (`com.tomuozawa.procrastinationtimer`), removido da Play Store por incompatibilidade (o app não é atualizado desde 2019 e não atende mais aos requisitos de target API da Play Store). Esta versão foi renomeada para **Procrastination Tracker** e ganhou uma versão nativa para Galaxy Watch (Wear OS), além do app de celular.
+**Track where your time actually goes — on your phone and on your wrist.**
 
-## O que o app original fazia
+A two-mode time tracker for Android and Wear OS: the classic 52/17 and Pomodoro focus timer, plus a
+free-form category stopwatch for people whose day does not fit a fixed cycle.
 
-Segundo a ficha na APKPure, o Procrastination Timer era um cronômetro simples de produtividade com dois métodos:
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
+[![Wear OS](https://img.shields.io/badge/Wear%20OS-3%2B-1A73E8?logo=wearos&logoColor=white)](https://wearos.google.com)
+[![Android](https://img.shields.io/badge/Android-8.0%2B%20(API%2026)-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
+[![Room](https://img.shields.io/badge/Room-SQLite-FF6F00?logo=sqlite&logoColor=white)](https://developer.android.com/training/data-storage/room)
+[![Gradle](https://img.shields.io/badge/Gradle-9.7-02303A?logo=gradle&logoColor=white)](https://gradle.org)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-- **52/17** — 52 minutos de foco, 17 minutos de pausa.
-- **Pomodoro** — ciclos de 25 minutos de foco, pausas de 5 minutos, e uma pausa de 30 minutos a cada 4 ciclos.
+[Português (pt-BR)](README.pt-BR.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
 
-Ele media o tempo produtivo vs. o tempo de procrastinação para você comparar os dois.
+</div>
 
-## O que este projeto entrega
+---
 
-O app tem duas seções independentes, escolhidas na tela inicial:
+## Why this exists
 
-**Modo Timer** — a recriação do app original:
-- **Mesma lógica dos dois modos** (52/17 e Pomodoro), implementada em Kotlin puro no módulo `:core`, compartilhada 100% entre celular e relógio.
-- Cronômetro, notificação persistente, histórico de sessões e comparação "produtivo vs. procrastinado" (hoje e histórico completo).
-- **Sincronização relógio → celular**: quando uma sessão termina no relógio, ela é enviada via Wearable Data Layer API e aparece no histórico do celular.
+The original **Procrastination Timer** (`com.tomuozawa.procrastinationtimer`) was pulled from the
+Play Store — it had not been updated since 2019 and no longer met the target API requirements. It
+was a simple, effective idea: measure focused time against procrastinated time and let the contrast
+speak for itself.
 
-**Modo Tracker** — modo novo (ver `spec/002-activity-tracker-mode.md` para a especificação completa), pra quem quer rastrear várias categorias de tempo em vez de só foco/procrastinação:
-- **"Pizza" de fatias** (2 a 6), nome livre — Trabalho, Estudo, Treino, Hobby, Procrastinando, o que fizer sentido. Toque numa fatia pra rastrear, toque de novo pra pausar, troque à vontade o dia todo.
-- **Perfis de layout**: Duo e Tri vêm prontos e são fixos (nunca sobrescritos); editar e salvar sempre cria um novo perfil Custom, e você pode ter vários Custom ao mesmo tempo.
-- **Roda em segundo plano** com notificação (nome da fatia + tempo, com ações Pausar/Parar), distingue ir pra outro app (não interrompe) de fechar o app pelos recentes (para e salva).
-- **Funciona offline em cada aparelho** (SQLite local via módulo `:trackerdata`, compartilhado entre `:app` e `:wear`), sincroniza os dois lados quando estão por perto.
-- Resumo hoje/semana por fatia, sem alarme/som (esse modo é cronômetro livre, não intervalo).
+This project rebuilds it for modern Android, adds a native Galaxy Watch app, and extends it with a
+second mode for days that do not divide neatly into "focus" and "break".
 
-## Estrutura do projeto
+## The two modes
+
+### ⏱️ Timer mode — the original, rebuilt
+
+Interval timing with a persistent notification, full session history, and a productive vs.
+procrastinated comparison for today and for all time.
+
+| Mode | Focus | Short break | Long break |
+|---|---|---|---|
+| **52/17** | 52 min | 17 min | — |
+| **Pomodoro** | 25 min | 5 min | 30 min every 4 cycles |
+| **45/15** | 45 min | 15 min | — |
+| **Custom** | 1–180 min | 1–180 min | configurable, every 2–12 cycles |
+
+### 🍕 Tracker mode — one stopwatch per category
+
+A "pizza" of 2 to 6 named slices — Work, Study, Gym, Hobby, Procrastinating, whatever fits. Tap a
+slice to start counting, tap again to pause, switch freely all day. No alarms, no forced rhythm.
+
+- **Layout profiles** — `Duo` and `Tri` ship ready to use and are never overwritten; editing one
+  creates a new custom profile. Up to 10 custom profiles, 2 to 6 slices each.
+- **Runs in the background** with an ongoing notification carrying Pause and Stop actions.
+  Switching to another app does not interrupt tracking; swiping the app away saves and stops.
+- **Quick settings tile** and a **floating bubble** to control the running slice without opening
+  the app.
+- **Today and week summaries** per slice, broken down by which device recorded the time.
+- **Lock the screen now** — an optional accessibility action for when the phone itself is the
+  distraction.
+
+## Phone ↔ watch sync
+
+Both apps keep their own complete local database and work fully offline. When the devices are near
+each other they reconcile in **both directions** over the Wearable Data Layer API — start a session
+on the watch, finish it on the phone, and the history stays consistent either way. A live presence
+channel powers hand-off prompts when both devices are counting at once.
+
+Deletions travel as tombstones, so a session deleted on one device stays deleted instead of coming
+back on the next merge.
+
+## Architecture at a glance
+
+Four modules, dependencies pointing one way only:
 
 ```
-ProcrastinationTracker/
-├── core/         → lógica pura em Kotlin do Modo Timer (TimerEngine, modos, Session) — sem dependência de Android
-├── trackerdata/  → módulo Android library com Room (perfis/fatias/sessões do Modo Tracker) + TrackerRepository, compartilhado por app e wear
-├── app/          → app de celular (Jetpack Compose + Material 3)
-└── wear/         → app do Galaxy Watch (Compose for Wear OS, standalone)
+:app (phone) ─┐
+              ├─▶ :trackerdata (Room + sync) ─▶ :core (pure Kotlin)
+:wear (watch) ┘
 ```
 
-## Requisitos para compilar
+`:core` holds the timer logic with **no Android dependency at all**, so phone and watch cannot drift
+apart — and so it can be unit tested on the JVM without an emulator. Both apps follow MVVM with
+unidirectional state: Compose renders an immutable `UiState`, ViewModels expose it as `StateFlow`,
+and repositories own all data access.
 
-- **Android Studio** Koala (2024.1) ou mais recente.
-- **JDK 17** (o Android Studio já vem com um embutido).
-- Um **Galaxy Watch com Wear OS 3+** (Watch4, Watch5, Watch6, Watch7, Watch Ultra) para instalar o `:wear`. Modelos com Wear OS 2 (Watch3 ou anteriores) não são suportados por esta versão (`minSdk 30`).
+The full reasoning is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Como abrir e compilar
+## Tech stack
 
-1. Abra a pasta `ProcrastinationTracker` no Android Studio (**File → Open**).
-2. Deixe o Android Studio sincronizar o Gradle. Como este projeto não inclui o `gradlew`/`gradle-wrapper.jar` binário, o Android Studio vai oferecer para gerá-lo automaticamente na primeira sincronização — aceite. Se preferir gerar manualmente, rode `gradle wrapper --gradle-version 8.7` uma vez com um Gradle já instalado na máquina.
-3. Espere a indexação/sync terminar (primeira vez baixa as dependências, pode demorar alguns minutos).
+**Kotlin** · **Jetpack Compose** + **Material 3** · **Compose for Wear OS** · **Room** ·
+**Coroutines & Flow** · **Navigation Compose** · **Foreground Services** · **Quick Settings Tile** ·
+**Wearable Data Layer API** · **Gradle 9.7** with **AGP 9.3.1** and **KSP**
 
-## Como instalar no Galaxy Watch
+## Getting started
 
-1. No relógio: **Configurações → Sobre → toque 5x na versão do software** para ativar o modo desenvolvedor, depois **Configurações → Desenvolvedor → Depuração ADB** (ative) e **Depurar via Wi-Fi** (ative).
-2. O relógio vai mostrar um IP e porta (ex.: `192.168.0.42:5555`).
-3. No terminal do computador (ou no terminal do Android Studio):
-   ```
-   adb connect 192.168.0.42:5555
-   ```
-4. No Android Studio, selecione o run configuration do módulo **wear** (ou crie um em **Run → Edit Configurations → + → Android App**, módulo `wear`) e escolha o relógio conectado como dispositivo de destino.
-5. Clique em **Run ▶**. O app instala e abre direto no relógio — não precisa do celular aberto (é standalone).
+**Requirements:** Android Studio Koala (2024.1) or newer, JDK 17+, and a device running Android 8.0
+(API 26) or newer. The watch app needs Wear OS 3+ (Galaxy Watch 4 and later).
 
-## Como instalar no celular
-
-1. Ative **Opções do desenvolvedor → Depuração USB** no celular (ou depuração via Wi-Fi, igual ao relógio).
-2. Conecte o celular via cabo ou `adb connect`.
-3. No Android Studio, selecione o run configuration do módulo **app** e o celular como destino.
-4. **Run ▶**.
-
-Como o app é instalado diretamente pelo Android Studio (sideload), ele não passa pelas regras de compliance da Play Store — é para uso pessoal.
-
-## Personalizar durações e nomes
-
-Tudo fica em `core/src/main/kotlin/.../core/TimerMode.kt`:
-
-```kotlin
-FIFTY_TWO_SEVENTEEN(
-    label = "52/17",
-    focusMinutes = 52,
-    shortBreakMinutes = 17,
-    ...
-)
+```bash
+git clone https://github.com/otaciliofox/procrastination-tracker.git
+cd procrastination-tracker
+./gradlew assembleDebug
 ```
 
-Mude os minutos ali e recompile — celular e relógio pegam o valor novo automaticamente, já que compartilham o mesmo `:core`.
+This produces both APKs:
 
-## Modo Tracker: o que fica só no celular
+- `app/build/outputs/apk/debug/app-debug.apk` — phone
+- `wear/build/outputs/apk/debug/wear-debug.apk` — watch
 
-Criar, editar ou excluir um perfil Custom (e adicionar/remover fatias) só é possível no celular —
-digitar vários nomes numa tela redonda pequena não compensava a complexidade. No relógio dá pra
-*trocar* entre os perfis que já existem (Duo, Tri, ou qualquer Custom criado no celular); o que
-você monta lá aparece no relógio pela sincronização. "Bloquear tela agora" também é só no celular
-(via `AccessibilityService`, ative uma vez em Configurações → Acessibilidade); "manter tela
-ligada" existe nos dois.
+### Installing
 
-## Possíveis melhorias futuras (não incluídas nesta primeira versão)
+```bash
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
 
-- Tile do Wear OS para iniciar/pausar direto da tela de tiles, sem abrir o app.
-- Complicação no mostrador do relógio mostrando o tempo restante.
-- Tela de configurações para durações customizadas no Modo Timer (hoje só 52/17 e Pomodoro fixos; 45/15 e modo totalmente customizável estão especificados mas ainda não implementados).
-- Gráfico de histórico (dia a dia) no celular.
-- Vibração customizada no relógio ao fim de cada sessão (hoje usa a notificação padrão).
-- Modo Tracker Fase 2 (subtarefas) e Fase 3 (pomodoro por fatia) — ver `spec/002-activity-tracker-mode.md`.
-- Criar/editar perfis Custom diretamente no relógio.
+For the watch, enable **Settings → About → tap the software version 5 times**, then **Settings →
+Developer options → ADB debugging** and **Debug over Wi-Fi**. The watch shows an IP and port:
 
-## Sobre os nomes de pacote
+```bash
+adb connect 192.168.0.42:5555
+adb -s 192.168.0.42:5555 install wear/build/outputs/apk/debug/wear-debug.apk
+```
 
-- Celular: `com.foxlab.procrastinationtracker`
-- Relógio: `com.foxlab.procrastinationtracker.watch`
+Both apps are standalone — the watch does not need the phone app running.
 
-Troque `foxlab` pelo namespace que preferir antes de compilar, se quiser — é só um find-and-replace nos `build.gradle.kts`, `AndroidManifest.xml` e nas pastas de pacote Kotlin.
+> **Note:** both apps must be signed with the same key for sync to work. Debug builds share the
+> debug keystore, so this is automatic during development.
+
+## Project structure
+
+```
+procrastination-tracker/
+├── core/         → pure Kotlin timer logic, no Android dependency
+├── trackerdata/  → Room database, repository and sync codec shared by both apps
+├── app/          → phone app (Jetpack Compose + Material 3)
+├── wear/         → Galaxy Watch app (Compose for Wear OS, standalone)
+├── docs/         → architecture, roadmap and development guides
+└── spec/         → feature specifications
+```
+
+## Roadmap
+
+Automated tests lead the backlog, followed by dependency injection, a version catalog and CI.
+Feature work — Wear OS tile, watch complication, history charts — comes after. See
+[docs/ROADMAP.md](docs/ROADMAP.md) for the full list, including an honest account of what the
+codebase is still missing.
+
+## License
+
+[MIT](LICENSE) © Otacílio Neto
