@@ -1,7 +1,17 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+// Signing credentials live in keystore.properties at the repo root: git-ignored, never committed,
+// never part of the build script itself. The file is optional on purpose -- without it the project
+// still builds (CI only ever assembles debug), it just produces an unsigned release.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) keystorePropertiesFile.inputStream().use { load(it) }
 }
 
 android {
@@ -16,8 +26,32 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // Falls back to the debug key when no keystore.properties is present, so a release
+            // build is always installable without any secret being committed or typed. That is
+            // enough for sideloading; publishing to Play needs a real key, at which point adding
+            // keystore.properties switches this over with no further change.
+            //
+            // The watch app resolves the same way, and must: the Wearable Data Layer only delivers
+            // between apps sharing an applicationId *and* a signature, so two different release
+            // keys would silently kill phone/watch sync.
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
