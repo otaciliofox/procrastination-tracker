@@ -1,0 +1,11 @@
+<resources>
+    <!--
+      The window the system paints before Compose runs. Without this the watch app opened on the
+      device default (light-ish) background and then snapped to the canvas, which read as a flash
+      on a screen this small. Same canvas value as the phone (BoardTokens.CANVAS).
+    -->
+    <style name="Theme.ProcrastinationTrackerWatch" parent="@android:style/Theme.DeviceDefault">
+        <item name="android:windowBackground">@color/canvas</item>
+        <item name="android:colorBackground">@color/canvas</item>
+    </style>
+</resources>
