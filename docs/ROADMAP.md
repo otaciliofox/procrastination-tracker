@@ -13,9 +13,9 @@ Honest list of what the codebase is missing today.
 | Gap | Impact |
 |---|---|
 | Some UI strings live in Compose source instead of `strings.xml` | Blocks localisation; the app is Portuguese-only today |
-| `isMinifyEnabled = false` in release builds | No R8 shrinking or obfuscation; larger APK than necessary |
 | `TrackerHistoryModal` (700 lines) and `TrackerBoard` (462 lines) | Large composables that mix layout with formatting and aggregation |
 | `Application.onCreate` opens the database and starts a sync loop | The process touches disk just by existing, which is why tests override the Application |
+| **Watch → phone sync never delivers** | Confirmed on hardware: the phone's database holds 22 sessions, all `sourceDevice=phone`, while the watch holds 6 of its own that it has marked as sent. Phone → watch works. Pre-existing, and reproduced identically on a debug build, so unrelated to R8 or Hilt |
 
 ## Phase 1 — Automated tests ✅
 
@@ -51,7 +51,9 @@ already MVVM with unidirectional state — but to close the gaps that pattern wa
 - [ ] **Split the large composables** — separate layout from data shaping in the tracker board and
       the history modal
 - [ ] **Extract a design-system module** — `BoardTokens` and the palette are shared informally today
-- [ ] **Enable R8** for release builds, with the keep rules Room and Compose need
+- [x] **R8 on release builds** — 11.4 MB → 1.5 MB on the phone, 43.0 MB → 2.1 MB on the watch.
+      The keep rules protect the three enums that are persisted by name in Room columns and in
+      Data Layer payloads; renaming them would make an existing database unreadable.
 
 ## Phase 3 — Continuous integration ✅
 
