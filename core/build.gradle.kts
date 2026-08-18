@@ -6,6 +6,7 @@ plugins {
 // between the phone app and the Wear OS app.
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation("junit:junit:4.13.2")
 }
 
 // Using explicit compiler-target flags instead of kotlin.jvmToolchain(17): the toolchain
