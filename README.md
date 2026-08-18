@@ -20,8 +20,8 @@ free-form category stopwatch for people whose day does not fit a fixed cycle.
 
 <table>
 <tr>
-<td align="center"><img src="docs/screenshots/tracker-board.png" width="300" alt="Tracker board"></td>
-<td align="center"><img src="docs/screenshots/home-screen.png" width="300" alt="Home screen"></td>
+<td align="center"><img src="docs/screenshots/tracker-board.png" width="290" alt="Tracker board"></td>
+<td align="center"><img src="docs/screenshots/home-screen.png" width="290" alt="Home screen"></td>
 </tr>
 <tr>
 <td align="center"><b>Tracker mode</b><br>each band's height is its share of the day</td>
@@ -29,7 +29,20 @@ free-form category stopwatch for people whose day does not fit a fixed cycle.
 </tr>
 </table>
 
-<sub>These screenshots are rendered by the Compose screenshot tests, so they cannot drift from the app.</sub>
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/watch-tracker.png" width="200" alt="Tracker on the watch"></td>
+<td align="center"><img src="docs/screenshots/watch-timer.png" width="200" alt="Timer on the watch"></td>
+<td align="center"><img src="docs/screenshots/watch-home.png" width="200" alt="Watch home"></td>
+</tr>
+<tr>
+<td align="center"><b>Tracker</b><br>bands become a scaling list</td>
+<td align="center"><b>Timer</b><br>the block's progress as a ring</td>
+<td align="center"><b>Home</b><br>both modes, sized for a circle</td>
+</tr>
+</table>
+
+<sub>The phone screens and the watch home are rendered by the Compose screenshot tests, so they cannot drift from the app. The two watch screens in use were captured from a Galaxy Watch6.</sub>
 
 </div>
 

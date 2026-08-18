@@ -17,6 +17,7 @@ The whole suite finishes in well under a minute.
 | Unit | `:core` | Plain JVM | The timer state machine, plan clamping, day aggregation and formatting |
 | Integration | `:trackerdata` | Robolectric + real in-memory Room | That a payload from the watch merges correctly into this device's database |
 | UI / screenshot | `:app` | Robolectric + Roborazzi | That real Compose screens render and respond to taps — with a PNG as evidence |
+| UI / screenshot | `:wear` | Same, on a round qualifier | That the watch layout survives a circular screen at its real size |
 
 ### Unit — `:core`
 
@@ -80,6 +81,16 @@ compose.onRoot().captureRoboImage("build/reports/screenshots/home-screen.png")
 Tests both assert and photograph: text assertions state the intent, and the PNG in
 `app/build/reports/screenshots/` is the proof. CI uploads the whole folder as an artifact on
 every run, so a rendering change is visible from the run page.
+
+The watch module renders on a round qualifier at its real size
+(`w227dp-h227dp-small-notlong-round-watch-xhdpi`), which is the point: a layout that looks fine on
+a rectangle can still lose its corners on a circle. Comparing the rendered watch home screen
+against a capture from a real Galaxy Watch6 shows them matching closely, which is the evidence
+that rendering off-device is worth trusting here.
+
+Only `HomeScreen` and `TrackerBackMenuScreen` are covered on the watch so far. Every other watch
+screen defaults to `viewModel()`, so it cannot be rendered without the real `Application` and its
+database — the same dependency injection gap, felt harder here than on the phone.
 
 The screenshots in the README are produced by these tests, which is why they never go stale.
 

@@ -31,15 +31,18 @@ jobs:
       # database in :trackerdata, and Compose screenshot tests in :app. No emulator is started,
       # which is what keeps this job fast and free of device flakiness.
       - name: Run tests
-        run: ./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest --stacktrace
+        run: ./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest :wear:testDebugUnitTest --stacktrace
 
       # The screenshots the UI tests rendered, kept as build output you can open from the run page.
+      # The watch ones render on a round qualifier, which is where a circular layout breaks.
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: screenshots
-          path: app/build/reports/screenshots/
+          path: |
+            app/build/reports/screenshots/
+            wear/build/reports/screenshots/
           if-no-files-found: error
 
       - name: Upload test reports

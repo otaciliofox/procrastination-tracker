@@ -20,8 +20,8 @@ Pomodoro, mais um cronômetro livre por categoria para quem tem um dia que não 
 
 <table>
 <tr>
-<td align="center"><img src="docs/screenshots/tracker-board.png" width="300" alt="Modo Tracker"></td>
-<td align="center"><img src="docs/screenshots/home-screen.png" width="300" alt="Tela inicial"></td>
+<td align="center"><img src="docs/screenshots/tracker-board.png" width="290" alt="Modo Tracker"></td>
+<td align="center"><img src="docs/screenshots/home-screen.png" width="290" alt="Tela inicial"></td>
 </tr>
 <tr>
 <td align="center"><b>Modo Tracker</b><br>a altura de cada faixa é a fatia dela no dia</td>
@@ -29,7 +29,20 @@ Pomodoro, mais um cronômetro livre por categoria para quem tem um dia que não 
 </tr>
 </table>
 
-<sub>Estes prints são gerados pelos testes de screenshot do Compose, então não têm como ficar desatualizados.</sub>
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/watch-tracker.png" width="200" alt="Tracker no relógio"></td>
+<td align="center"><img src="docs/screenshots/watch-timer.png" width="200" alt="Timer no relógio"></td>
+<td align="center"><img src="docs/screenshots/watch-home.png" width="200" alt="Início no relógio"></td>
+</tr>
+<tr>
+<td align="center"><b>Tracker</b><br>as faixas viram uma lista com escala</td>
+<td align="center"><b>Timer</b><br>o progresso do bloco como anel</td>
+<td align="center"><b>Início</b><br>os dois modos, no tamanho do círculo</td>
+</tr>
+</table>
+
+<sub>As telas do celular e o início do relógio são gerados pelos testes de screenshot do Compose, então não têm como ficar desatualizados. As duas telas do relógio em uso foram capturadas de um Galaxy Watch6.</sub>
 
 </div>
 
