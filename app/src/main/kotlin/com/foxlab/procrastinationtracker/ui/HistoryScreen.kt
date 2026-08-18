@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.foxlab.procrastinationtracker.core.Phase
 import com.foxlab.procrastinationtracker.core.toHoursMinutesString
 import com.foxlab.procrastinationtracker.ui.theme.BoardPalette
@@ -41,7 +41,7 @@ import java.util.Locale
 
 /** Timer-mode history, in the same card language as the board. */
 @Composable
-fun HistoryScreen(viewModel: HistoryViewModel = viewModel()) {
+fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
 

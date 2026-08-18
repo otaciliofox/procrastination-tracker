@@ -37,7 +37,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material.Text
@@ -50,7 +50,7 @@ import com.foxlab.procrastinationtracker.core.toStopwatchString
  * phone's board without pretending a 1.4" screen can hold the same chart.
  */
 @Composable
-fun TrackerSummaryScreen(viewModel: TrackerViewModel = viewModel()) {
+fun TrackerSummaryScreen(viewModel: TrackerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 

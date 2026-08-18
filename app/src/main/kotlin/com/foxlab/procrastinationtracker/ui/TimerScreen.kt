@@ -42,7 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.foxlab.procrastinationtracker.R
 import com.foxlab.procrastinationtracker.core.Phase
 import com.foxlab.procrastinationtracker.core.TimerMode
@@ -60,7 +60,7 @@ import com.foxlab.procrastinationtracker.viewmodel.TimerViewModel
  * finish today", which is the summary card under the clock.
  */
 @Composable
-fun TimerScreen(viewModel: TimerViewModel = viewModel()) {
+fun TimerScreen(viewModel: TimerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val timer = state.timer
     // Focus is blue, interval is teal. Rose belongs to procrastination in the Tracker and

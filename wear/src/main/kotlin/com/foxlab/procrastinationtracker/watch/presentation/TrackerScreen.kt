@@ -41,7 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
@@ -63,7 +63,7 @@ import com.foxlab.procrastinationtracker.trackerdata.entity.ActivitySliceEntity
 fun TrackerScreen(
     onOpenProfiles: () -> Unit,
     onOpenSummary: () -> Unit,
-    viewModel: TrackerViewModel = viewModel()
+    viewModel: TrackerViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     var showBackMenu by remember { mutableStateOf(false) }

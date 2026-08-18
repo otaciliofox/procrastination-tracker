@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import com.foxlab.procrastinationtracker.core.TimerMode
@@ -22,7 +22,7 @@ import com.foxlab.procrastinationtracker.core.TimerMode
  * simply runs whatever preset you choose.
  */
 @Composable
-fun ModeSelectScreen(onModeChosen: () -> Unit, viewModel: TimerViewModel = viewModel()) {
+fun ModeSelectScreen(onModeChosen: () -> Unit, viewModel: TimerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val presets = TimerMode.entries.filter { it != TimerMode.CUSTOM }
 

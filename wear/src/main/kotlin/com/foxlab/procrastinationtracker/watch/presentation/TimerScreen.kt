@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
@@ -53,7 +53,7 @@ import com.foxlab.procrastinationtracker.core.toClockString
  * filled while running, outlined while idle. The round progress ring is the watch-specific part.
  */
 @Composable
-fun TimerScreen(onOpenModeSelect: () -> Unit, viewModel: TimerViewModel = viewModel()) {
+fun TimerScreen(onOpenModeSelect: () -> Unit, viewModel: TimerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val accent = if (state.phase == Phase.FOCUS) WatchPalette.Blue else WatchPalette.Teal
     val context = LocalContext.current

@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.foxlab.procrastinationtracker.service.ScreenLockAccessibilityService
 import com.foxlab.procrastinationtracker.trackerdata.LiveSessionState
 import com.foxlab.procrastinationtracker.viewmodel.TrackerViewModel
@@ -27,7 +27,7 @@ import com.foxlab.procrastinationtracker.viewmodel.TrackerViewModel
  * least a minute recorded.
  */
 @Composable
-fun TrackerScreen(onGoHome: () -> Unit, viewModel: TrackerViewModel = viewModel()) {
+fun TrackerScreen(onGoHome: () -> Unit, viewModel: TrackerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 

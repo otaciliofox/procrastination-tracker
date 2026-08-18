@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import javax.inject.Inject
 import com.foxlab.procrastinationtracker.data.AppDatabase
 import com.foxlab.procrastinationtracker.data.SessionRepository
 import com.foxlab.procrastinationtracker.service.ActivitySyncSender
@@ -11,19 +12,19 @@ import com.foxlab.procrastinationtracker.trackerdata.TrackerDatabase
 import com.foxlab.procrastinationtracker.trackerdata.LiveSessionSync
 import com.foxlab.procrastinationtracker.trackerdata.SOURCE_PHONE
 import com.foxlab.procrastinationtracker.trackerdata.TrackerRepository
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@HiltAndroidApp
 class ProcrastinationTrackerApp : Application() {
 
-    val database: AppDatabase by lazy { AppDatabase.build(this) }
-    val repository: SessionRepository by lazy { SessionRepository(database.sessionDao()) }
-
-    val trackerDatabase: TrackerDatabase by lazy { TrackerDatabase.build(this) }
-    val trackerRepository: TrackerRepository by lazy { TrackerRepository(trackerDatabase) }
+    // Injected rather than built here: everything else in the app now asks the graph for these,
+    // so this class is just another consumer -- it only needs them for the start-up work below.
+    @Inject lateinit var trackerRepository: TrackerRepository
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

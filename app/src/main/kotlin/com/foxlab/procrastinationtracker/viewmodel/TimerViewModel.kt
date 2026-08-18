@@ -1,11 +1,11 @@
 package com.foxlab.procrastinationtracker.viewmodel
 
-import android.app.Application
+import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.foxlab.procrastinationtracker.ProcrastinationTrackerApp
+import com.foxlab.procrastinationtracker.data.SessionRepository
 import com.foxlab.procrastinationtracker.core.TimerMode
 import com.foxlab.procrastinationtracker.core.TimerPlan
 import com.foxlab.procrastinationtracker.trackerdata.settings.CustomPlanStore
@@ -13,11 +13,16 @@ import com.foxlab.procrastinationtracker.core.TimerDaySummary
 import com.foxlab.procrastinationtracker.service.TimerForegroundService
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class TimerViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val sessions = (app as ProcrastinationTrackerApp).repository
+@HiltViewModel
+class TimerViewModel @Inject constructor(
+    private val sessions: SessionRepository,
+    @param:ApplicationContext private val context: Context
+) : ViewModel() {
 
     data class UiState(
         val timer: TimerForegroundService.UiState,
@@ -41,25 +46,25 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     fun reset() = sendAction(TimerForegroundService.ACTION_RESET)
 
     fun setMode(mode: TimerMode) {
-        val intent = Intent(getApplication(), TimerForegroundService::class.java).apply {
+        val intent = Intent(context, TimerForegroundService::class.java).apply {
             action = TimerForegroundService.ACTION_SET_MODE
             putExtra(TimerForegroundService.EXTRA_MODE, mode.name)
         }
-        ContextCompat.startForegroundService(getApplication(), intent)
+        ContextCompat.startForegroundService(context, intent)
     }
 
-    fun customPlan(): TimerPlan = CustomPlanStore.load(getApplication())
+    fun customPlan(): TimerPlan = CustomPlanStore.load(context)
 
     /** Saves the user's own durations and puts the engine on them right away. */
     fun saveCustomPlan(plan: TimerPlan) {
-        CustomPlanStore.save(getApplication(), plan)
+        CustomPlanStore.save(context, plan)
         sendAction(TimerForegroundService.ACTION_APPLY_CUSTOM_PLAN)
     }
 
     private fun sendAction(action: String) {
-        val intent = Intent(getApplication(), TimerForegroundService::class.java).apply {
+        val intent = Intent(context, TimerForegroundService::class.java).apply {
             this.action = action
         }
-        ContextCompat.startForegroundService(getApplication(), intent)
+        ContextCompat.startForegroundService(context, intent)
     }
 }

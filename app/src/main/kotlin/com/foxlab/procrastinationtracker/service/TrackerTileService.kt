@@ -7,13 +7,15 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.foxlab.procrastinationtracker.ProcrastinationTrackerApp
 import com.foxlab.procrastinationtracker.R
+import com.foxlab.procrastinationtracker.trackerdata.TrackerRepository
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Quick Settings tile: pause or resume tracking from the notification shade, without opening the
@@ -24,7 +26,10 @@ import kotlinx.coroutines.launch
  * same everywhere and is two taps from any screen. The two features overlap on purpose: whichever
  * one a given phone supports, the user still gets "control it without opening the app".
  */
+@AndroidEntryPoint
 class TrackerTileService : TileService() {
+
+    @Inject lateinit var repository: TrackerRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -44,7 +49,6 @@ class TrackerTileService : TileService() {
 
         // Not tracking: resume the last activity, or the profile's first one on a cold start.
         scope.launch {
-            val repository = (application as ProcrastinationTrackerApp).trackerRepository
             val slice = repository.getNextSlice(null) ?: return@launch
             sendResume(slice.id, slice.title)
         }

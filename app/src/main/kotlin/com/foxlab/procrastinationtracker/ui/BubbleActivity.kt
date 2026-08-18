@@ -2,6 +2,7 @@ package com.foxlab.procrastinationtracker.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.foxlab.procrastinationtracker.core.toStopwatchString
 import com.foxlab.procrastinationtracker.ui.theme.BoardPalette
 import com.foxlab.procrastinationtracker.ui.theme.ProcrastinationTrackerTheme
@@ -48,6 +49,7 @@ import com.foxlab.procrastinationtracker.viewmodel.TrackerViewModel
  * without leaving the app you are actually in. Anything more (reports, renaming, corrections)
  * belongs in the full screen, one tap away.
  */
+@AndroidEntryPoint
 class BubbleActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +63,7 @@ class BubbleActivity : ComponentActivity() {
 }
 
 @Composable
-private fun BubbleContent(viewModel: TrackerViewModel = viewModel()) {
+private fun BubbleContent(viewModel: TrackerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val service = state.service
     val activeIndex = state.slices.indexOfFirst { it.id == service.activeSliceId }

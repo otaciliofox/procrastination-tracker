@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import com.foxlab.procrastinationtracker.trackerdata.entity.LayoutProfileEntity
@@ -22,7 +22,7 @@ import com.foxlab.procrastinationtracker.trackerdata.entity.LayoutProfileEntity
  * names. Whatever you set up there syncs here (spec 002 §7).
  */
 @Composable
-fun TrackerProfileSelectScreen(onProfileChosen: () -> Unit, viewModel: TrackerViewModel = viewModel()) {
+fun TrackerProfileSelectScreen(onProfileChosen: () -> Unit, viewModel: TrackerViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
 
     Box(

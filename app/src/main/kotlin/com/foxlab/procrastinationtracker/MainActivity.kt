@@ -2,6 +2,7 @@ package com.foxlab.procrastinationtracker
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import com.foxlab.procrastinationtracker.ui.theme.ProcrastinationTrackerTheme
  * No permission is asked here on purpose: tracking works without notifications, so the prompt
  * only shows up where it buys the user something (see [rememberNotificationPermission]).
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

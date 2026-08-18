@@ -12,6 +12,7 @@ import com.foxlab.procrastinationtracker.R
 import com.foxlab.procrastinationtracker.core.toClockString
 import com.foxlab.procrastinationtracker.trackerdata.LiveSessionSync
 import com.foxlab.procrastinationtracker.trackerdata.TrackerRepository
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,12 +24,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Owns the single "what slice is active right now" state for the phone's Tracker mode. Mirrors
  * TimerForegroundService's architecture: UI never binds to this service, it just fires action
  * intents and observes [uiState]. See spec 002 §4.1 and §6.
  */
+@AndroidEntryPoint
 class TrackerForegroundService : Service() {
 
     data class UiState(
@@ -73,7 +76,7 @@ class TrackerForegroundService : Service() {
 
     private var tickingJob: Job? = null
     private val scope = CoroutineScope(SupervisorJob())
-    private lateinit var repository: TrackerRepository
+    @Inject lateinit var repository: TrackerRepository
     private var startedAtElapsedRealtime: Long = 0L
 
     /** Wall-clock start of the running block, so the notification's chronometer counts by itself. */
@@ -82,11 +85,6 @@ class TrackerForegroundService : Service() {
     /** What "Retomar" goes back to after a pause. */
     private var lastSliceId: String? = null
     private var lastSliceTitle: String = ""
-
-    override fun onCreate() {
-        super.onCreate()
-        repository = (application as ProcrastinationTrackerApp).trackerRepository
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {

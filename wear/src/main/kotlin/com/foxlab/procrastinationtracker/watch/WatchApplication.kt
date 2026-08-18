@@ -9,19 +9,22 @@ import com.foxlab.procrastinationtracker.trackerdata.LiveSessionSync
 import com.foxlab.procrastinationtracker.trackerdata.SOURCE_WATCH
 import com.foxlab.procrastinationtracker.trackerdata.TrackerRepository
 import com.foxlab.procrastinationtracker.watch.service.ActivitySyncSender
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /** How much history the watch keeps locally. The phone stays the archive. */
 private const val WATCH_HISTORY_WINDOW_MILLIS = 30L * 24 * 60 * 60 * 1000
 
+@HiltAndroidApp
 class WatchApplication : Application() {
 
-    val trackerDatabase: TrackerDatabase by lazy { TrackerDatabase.build(this) }
-    val trackerRepository: TrackerRepository by lazy { TrackerRepository(trackerDatabase) }
+    // Injected like everywhere else now; this class only needs it for the start-up work below.
+    @Inject lateinit var trackerRepository: TrackerRepository
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

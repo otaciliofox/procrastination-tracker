@@ -1,10 +1,14 @@
 package com.foxlab.procrastinationtracker.watch.presentation
 
-import android.app.Application
+import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import com.foxlab.procrastinationtracker.trackerdata.TrackerRepository
 import com.foxlab.procrastinationtracker.trackerdata.CompanionPresence
 import com.foxlab.procrastinationtracker.trackerdata.LiveSessionState
 import com.foxlab.procrastinationtracker.trackerdata.LiveSessionSync
@@ -24,9 +28,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TrackerViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val repository = (app as WatchApplication).trackerRepository
+@HiltViewModel
+class TrackerViewModel @Inject constructor(
+    private val repository: TrackerRepository,
+    @param:ApplicationContext private val context: Context
+) : ViewModel() {
 
     data class UiState(
         val profiles: List<LayoutProfileEntity> = emptyList(),
@@ -84,12 +90,12 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
     fun activateSlice(slice: ActivitySliceEntity) {
-        val intent = Intent(getApplication(), TrackerForegroundService::class.java).apply {
+        val intent = Intent(context, TrackerForegroundService::class.java).apply {
             action = TrackerForegroundService.ACTION_ACTIVATE_SLICE
             putExtra(TrackerForegroundService.EXTRA_SLICE_ID, slice.id)
             putExtra(TrackerForegroundService.EXTRA_SLICE_TITLE, slice.title)
         }
-        ContextCompat.startForegroundService(getApplication(), intent)
+        ContextCompat.startForegroundService(context, intent)
     }
 
     fun pauseActive() = sendAction(TrackerForegroundService.ACTION_PAUSE)
@@ -101,25 +107,25 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
         if (uiState.value.service.isTracking) return null
         // Never heard a "hi" from a companion: nothing to ask, and no reason to pay for a Data
         // Layer lookup that has nobody to answer it.
-        if (!CompanionPresence.hasCompanion(getApplication())) return null
-        val myId = LiveSessionSync.deviceId(getApplication())
+        if (!CompanionPresence.hasCompanion(context)) return null
+        val myId = LiveSessionSync.deviceId(context)
         RemoteLiveSession.runningOnOtherDevice(myId)?.let { return it }
         // Nothing cached (fresh process): ask the Data Layer for the current broadcast.
-        val fetched = withContext(Dispatchers.IO) { LiveSessionSync.readRemote(getApplication()) }
+        val fetched = withContext(Dispatchers.IO) { LiveSessionSync.readRemote(context) }
         if (fetched != null) RemoteLiveSession.update(fetched)
         return fetched?.takeIf { it.isFresh() && it.deviceId != myId }
     }
 
     /** "Continuar aqui": same block, same start time, now owned by the watch. */
     fun takeOverRemoteSession(remote: LiveSessionState) {
-        val intent = Intent(getApplication(), TrackerForegroundService::class.java).apply {
+        val intent = Intent(context, TrackerForegroundService::class.java).apply {
             action = TrackerForegroundService.ACTION_TAKE_OVER
             putExtra(TrackerForegroundService.EXTRA_TAKEOVER_SESSION_ID, remote.sessionId)
             putExtra(TrackerForegroundService.EXTRA_SLICE_ID, remote.sliceId)
             putExtra(TrackerForegroundService.EXTRA_SLICE_TITLE, remote.sliceTitle)
             putExtra(TrackerForegroundService.EXTRA_TAKEOVER_STARTED_AT, remote.startedAtMillis)
         }
-        ContextCompat.startForegroundService(getApplication(), intent)
+        ContextCompat.startForegroundService(context, intent)
         RemoteLiveSession.clear()
     }
 
@@ -129,21 +135,21 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
             // "Começar um novo": the phone closes and saves its own block when it sees this
             // watch take over, so nothing is written on its behalf here.
             activateSlice(slice)
-            runCatching { ActivitySyncSender.push(getApplication(), repository) }
+            runCatching { ActivitySyncSender.push(context, repository) }
         }
         RemoteLiveSession.clear()
     }
 
     fun switchProfile(profileId: String) {
-        val intent = Intent(getApplication(), TrackerForegroundService::class.java).apply {
+        val intent = Intent(context, TrackerForegroundService::class.java).apply {
             action = TrackerForegroundService.ACTION_SWITCH_PROFILE
             putExtra(TrackerForegroundService.EXTRA_PROFILE_ID, profileId)
         }
-        ContextCompat.startForegroundService(getApplication(), intent)
+        ContextCompat.startForegroundService(context, intent)
     }
 
     private fun sendAction(action: String) {
-        val intent = Intent(getApplication(), TrackerForegroundService::class.java).apply { this.action = action }
-        ContextCompat.startForegroundService(getApplication(), intent)
+        val intent = Intent(context, TrackerForegroundService::class.java).apply { this.action = action }
+        ContextCompat.startForegroundService(context, intent)
     }
 }

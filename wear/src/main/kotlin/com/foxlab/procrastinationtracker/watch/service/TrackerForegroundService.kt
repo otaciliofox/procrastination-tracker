@@ -12,6 +12,7 @@ import com.foxlab.procrastinationtracker.trackerdata.TrackerRepository
 import com.foxlab.procrastinationtracker.watch.R
 import com.foxlab.procrastinationtracker.watch.WatchApplication
 import com.foxlab.procrastinationtracker.watch.presentation.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,9 +23,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlinx.coroutines.withContext
 
 /** Watch-side twin of the phone's TrackerForegroundService. Same behavior, see spec 002 §4.1/§6. */
+@AndroidEntryPoint
 class TrackerForegroundService : Service() {
 
     data class UiState(
@@ -69,18 +72,13 @@ class TrackerForegroundService : Service() {
 
     private var tickingJob: Job? = null
     private val scope = CoroutineScope(SupervisorJob())
-    private lateinit var repository: TrackerRepository
+    @Inject lateinit var repository: TrackerRepository
     private var startedAtElapsedRealtime: Long = 0L
 
     /** Wall-clock start of the running block, so the notification counts on its own. */
     private var startedAtWallClock: Long = 0L
     private var lastSliceId: String? = null
     private var lastSliceTitle: String = ""
-
-    override fun onCreate() {
-        super.onCreate()
-        repository = (application as WatchApplication).trackerRepository
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {

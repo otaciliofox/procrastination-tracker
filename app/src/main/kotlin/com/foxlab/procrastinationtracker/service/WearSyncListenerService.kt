@@ -1,16 +1,18 @@
 package com.foxlab.procrastinationtracker.service
 
-import com.foxlab.procrastinationtracker.ProcrastinationTrackerApp
 import com.foxlab.procrastinationtracker.core.Phase
+import com.foxlab.procrastinationtracker.data.SessionRepository
 import com.foxlab.procrastinationtracker.core.Session
 import com.foxlab.procrastinationtracker.core.TimerMode
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.WearableListenerService
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Receives completed sessions pushed from the Galaxy Watch app (see
@@ -18,12 +20,14 @@ import kotlinx.coroutines.launch
  * stores them in the same Room database used by the phone's own timer,
  * so History/Stats show a combined picture.
  */
+@AndroidEntryPoint
 class WearSyncListenerService : WearableListenerService() {
+
+    @Inject lateinit var repository: SessionRepository
 
     private val scope = CoroutineScope(SupervisorJob())
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
-        val repository = (application as ProcrastinationTrackerApp).repository
         for (event in dataEvents) {
             if (event.type != DataEvent.TYPE_CHANGED) continue
             val path = event.dataItem.uri.path ?: continue

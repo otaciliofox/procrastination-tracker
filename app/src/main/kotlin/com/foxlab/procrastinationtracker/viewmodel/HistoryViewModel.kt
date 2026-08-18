@@ -1,18 +1,20 @@
 package com.foxlab.procrastinationtracker.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.foxlab.procrastinationtracker.ProcrastinationTrackerApp
+import com.foxlab.procrastinationtracker.data.SessionRepository
 import com.foxlab.procrastinationtracker.core.Session
 import com.foxlab.procrastinationtracker.core.TimerDaySummary
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class HistoryViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val repository = (app as ProcrastinationTrackerApp).repository
+@HiltViewModel
+class HistoryViewModel @Inject constructor(
+    private val repository: SessionRepository
+) : ViewModel() {
 
     data class UiState(
         val today: List<Session> = emptyList(),

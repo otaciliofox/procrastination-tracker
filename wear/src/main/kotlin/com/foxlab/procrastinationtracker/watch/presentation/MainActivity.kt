@@ -2,6 +2,7 @@ package com.foxlab.procrastinationtracker.watch.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
@@ -13,6 +14,7 @@ import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
  * either way, and the pre-configured Timer asks only when the user starts a block that has to
  * alert (see [TimerScreen]).
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

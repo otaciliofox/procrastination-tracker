@@ -16,6 +16,7 @@ import com.foxlab.procrastinationtracker.core.TimerMode
 import com.foxlab.procrastinationtracker.core.TimerPlan
 import com.foxlab.procrastinationtracker.core.toClockString
 import com.foxlab.procrastinationtracker.trackerdata.settings.CustomPlanStore
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -25,12 +26,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Owns the single [TimerEngine] instance for the phone app, ticks it once a second,
  * shows a persistent notification with the remaining time, and writes finished
  * sessions to Room. UI observes [uiState] instead of binding to the service.
  */
+@AndroidEntryPoint
 class TimerForegroundService : Service() {
 
     data class UiState(
@@ -77,12 +80,7 @@ class TimerForegroundService : Service() {
 
     private var job: Job? = null
     private val scope = CoroutineScope(SupervisorJob())
-    private lateinit var repository: com.foxlab.procrastinationtracker.data.SessionRepository
-
-    override fun onCreate() {
-        super.onCreate()
-        repository = (application as ProcrastinationTrackerApp).repository
-    }
+    @Inject lateinit var repository: com.foxlab.procrastinationtracker.data.SessionRepository
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
