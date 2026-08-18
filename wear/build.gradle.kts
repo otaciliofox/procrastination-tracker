@@ -35,6 +35,14 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // Round-screen Compose renders on the JVM for the screenshot tests, which needs the watch
+    // app's own resources and theme available to the unit test source set.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {
@@ -74,4 +82,20 @@ dependencies {
     implementation("com.google.android.gms:play-services-wearable:18.2.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core-ktx:1.6.1")
+    testImplementation(composeBom)
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.32.2")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.32.2")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.32.2")
+}
+
+// Same reason as the phone module: Roborazzi's Gradle plugin cannot load on AGP 9, and this flag
+// is the only thing it would have set for us.
+tasks.withType<Test>().configureEach {
+    systemProperty("roborazzi.test.record", "true")
 }
