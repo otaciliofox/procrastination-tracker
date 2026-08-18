@@ -53,7 +53,10 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            isMinifyEnabled = false
+            // R8 shrinks and obfuscates. The keep rules that matter are in proguard-rules.pro:
+            // three enums cross process boundaries by name and must not be renamed.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
