@@ -8,6 +8,7 @@ Um rastreador de tempo com dois modos, para Android e Wear OS: o clássico timer
 Pomodoro, mais um cronômetro livre por categoria para quem tem um dia que não cabe num ciclo fixo.
 
 [![CI](https://github.com/otaciliofox/procrastination-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/otaciliofox/procrastination-tracker/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/otaciliofox/procrastination-tracker?logo=github&color=success)](https://github.com/otaciliofox/procrastination-tracker/releases/latest)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Wear OS](https://img.shields.io/badge/Wear%20OS-3%2B-1A73E8?logo=wearos&logoColor=white)](https://wearos.google.com)
@@ -140,6 +141,17 @@ inteira é um comando só e cabe num pipeline:
 O que realmente exige hardware — o foreground service sobreviver, as ações da notificação, o tile,
 e a entrega da Data Layer entre dois aparelhos — é verificado à mão, e não por uma suíte de
 emulador. O raciocínio está em [docs/TESTING.md](docs/TESTING.md).
+
+## Download
+
+Os APKs assinados dos dois apps ficam anexados a cada release:
+
+**[⬇ Última versão](https://github.com/otaciliofox/procrastination-tracker/releases/latest)** —
+`…-phone.apk` e `…-watch.apk`
+
+Instale o APK do celular no celular e o do relógio no relógio. Os dois são assinados com a mesma
+chave, que é o que a Wearable Data Layer exige antes de sincronizar qualquer coisa entre eles — um
+release cujos dois APKs divirjam na chave é reprovado pelo CI exatamente por isso.
 
 ## Como compilar
 

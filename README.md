@@ -8,6 +8,7 @@ A two-mode time tracker for Android and Wear OS: the classic 52/17 and Pomodoro 
 free-form category stopwatch for people whose day does not fit a fixed cycle.
 
 [![CI](https://github.com/otaciliofox/procrastination-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/otaciliofox/procrastination-tracker/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/otaciliofox/procrastination-tracker?logo=github&color=success)](https://github.com/otaciliofox/procrastination-tracker/releases/latest)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Wear OS](https://img.shields.io/badge/Wear%20OS-3%2B-1A73E8?logo=wearos&logoColor=white)](https://wearos.google.com)
@@ -138,6 +139,17 @@ command and fits in a pipeline:
 What genuinely needs hardware — foreground service survival, notification actions, the tile, and
 Data Layer delivery between two devices — is verified by hand rather than by an emulator suite.
 The reasoning is in [docs/TESTING.md](docs/TESTING.md).
+
+## Download
+
+Signed APKs for both apps are attached to every release:
+
+**[⬇ Latest release](https://github.com/otaciliofox/procrastination-tracker/releases/latest)** —
+`…-phone.apk` and `…-watch.apk`
+
+Install the phone APK on the phone and the watch APK on the watch. Both are signed with the same
+key, which the Wearable Data Layer requires before it will sync anything between them — a release
+build whose two APKs disagree on the signing key is rejected by CI for exactly that reason.
 
 ## Getting started
 
