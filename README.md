@@ -119,7 +119,7 @@ The full reasoning is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 **Kotlin** · **Jetpack Compose** + **Material 3** · **Compose for Wear OS** · **Room** ·
 **Coroutines & Flow** · **Navigation Compose** · **Foreground Services** · **Quick Settings Tile** ·
-**Wearable Data Layer API** · **Gradle 9.7** with **AGP 9.3.1** and **KSP**
+**Hilt** · **Wearable Data Layer API** · **Gradle 9.7** with **AGP 9.3.1** and **KSP**
 
 ## Tests
 
@@ -127,14 +127,15 @@ Every automated test runs on the JVM — no emulator, no attached device — so 
 command and fits in a pipeline:
 
 ```bash
-./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest
+./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest :wear:testDebugUnitTest
 ```
 
 | Tier | What it covers |
 |---|---|
 | **Unit** (`:core`) | The timer state machine. Time is a parameter, so a four-cycle Pomodoro runs in microseconds instead of 150 minutes |
 | **Integration** (`:trackerdata`) | The watch's sync payload merged into a real in-memory Room database: tombstones, last-write-wins, idempotent re-merge |
-| **UI** (`:app`) | Real Compose screens rendered, tapped and photographed — the PNGs above come from these tests |
+| **ViewModel** (`:app`) | Screen state built from a real repository, no running app required — what constructor injection made possible |
+| **UI** (`:app`, `:wear`) | Real Compose screens rendered, tapped and photographed, the watch on a round qualifier — the PNGs above come from these tests |
 
 What genuinely needs hardware — foreground service survival, notification actions, the tile, and
 Data Layer delivery between two devices — is verified by hand rather than by an emulator suite.

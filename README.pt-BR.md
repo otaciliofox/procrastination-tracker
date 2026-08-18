@@ -121,7 +121,7 @@ O raciocínio completo está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 **Kotlin** · **Jetpack Compose** + **Material 3** · **Compose for Wear OS** · **Room** ·
 **Coroutines & Flow** · **Navigation Compose** · **Foreground Services** · **Quick Settings Tile** ·
-**Wearable Data Layer API** · **Gradle 9.7** com **AGP 9.3.1** e **KSP**
+**Hilt** · **Wearable Data Layer API** · **Gradle 9.7** com **AGP 9.3.1** e **KSP**
 
 ## Testes
 
@@ -129,14 +129,15 @@ Todos os testes automatizados rodam na JVM — sem emulador, sem aparelho conect
 inteira é um comando só e cabe num pipeline:
 
 ```bash
-./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest
+./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest :wear:testDebugUnitTest
 ```
 
 | Camada | O que cobre |
 |---|---|
 | **Unitário** (`:core`) | A máquina de estados do timer. O tempo é parâmetro, então um Pomodoro de 4 ciclos roda em microssegundos em vez de 150 minutos |
 | **Integração** (`:trackerdata`) | O payload de sync do relógio aplicado num banco Room real em memória: tombstones, última escrita vence, remerge idempotente |
-| **UI** (`:app`) | Telas Compose reais renderizadas, tocadas e fotografadas — os prints acima saem desses testes |
+| **ViewModel** (`:app`) | Estado de tela construído a partir de um repositório real, sem app rodando — o que a injeção por construtor destravou |
+| **UI** (`:app`, `:wear`) | Telas Compose reais renderizadas, tocadas e fotografadas, o relógio em tela redonda — os prints acima saem desses testes |
 
 O que realmente exige hardware — o foreground service sobreviver, as ações da notificação, o tile,
 e a entrega da Data Layer entre dois aparelhos — é verificado à mão, e não por uma suíte de

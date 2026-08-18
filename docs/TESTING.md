@@ -5,12 +5,12 @@ pipeline, and no test needs a device attached. That is a deliberate choice, and 
 explains what it buys, what it gives up, and where the line is drawn.
 
 ```bash
-./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest
+./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest :wear:testDebugUnitTest
 ```
 
 The whole suite finishes in well under a minute.
 
-## Three tiers
+## Four tiers
 
 | Tier | Module | Runs on | What it proves |
 |---|---|---|---|
@@ -18,6 +18,7 @@ The whole suite finishes in well under a minute.
 | Integration | `:trackerdata` | Robolectric + real in-memory Room | That a payload from the watch merges correctly into this device's database |
 | UI / screenshot | `:app` | Robolectric + Roborazzi | That real Compose screens render and respond to taps — with a PNG as evidence |
 | UI / screenshot | `:wear` | Same, on a round qualifier | That the watch layout survives a circular screen at its real size |
+| ViewModel | `:app` | Robolectric + real repository | That data reaching the repository comes out of the screen state correctly |
 
 ### Unit — `:core`
 
@@ -88,9 +89,9 @@ a rectangle can still lose its corners on a circle. Comparing the rendered watch
 against a capture from a real Galaxy Watch6 shows them matching closely, which is the evidence
 that rendering off-device is worth trusting here.
 
-Only `HomeScreen` and `TrackerBackMenuScreen` are covered on the watch so far. Every other watch
-screen defaults to `viewModel()`, so it cannot be rendered without the real `Application` and its
-database — the same dependency injection gap, felt harder here than on the phone.
+Only `HomeScreen` and `TrackerBackMenuScreen` are covered on the watch so far. The other watch
+screens take a ViewModel, so covering them means giving the test a graph to build one from — worth
+doing, and possible now that the watch module is on Hilt too, but not done yet.
 
 The screenshots in the README are produced by these tests, which is why they never go stale.
 
@@ -98,6 +99,28 @@ The screenshots in the README are produced by these tests, which is why they nev
 > `TestedExtension` and so cannot load on AGP 9. The plugin only wires record/verify tasks and
 > sets one flag, so `app/build.gradle.kts` sets `roborazzi.test.record` on the test task instead
 > and the library works unchanged.
+
+### ViewModel — the tier dependency injection unlocked
+
+`HistoryViewModelTest` exists because the ViewModel is now an ordinary object. It used to read its
+repository through `application as ProcrastinationTrackerApp`, which meant constructing it required
+that exact Application to be running. With constructor injection the test just hands it one:
+
+```kotlin
+val viewModel = HistoryViewModel(repository)
+```
+
+The repository is the real one over an in-memory Room database rather than a fake, so the SQL, the
+entity mapping and the day-boundary logic all take part in the assertions.
+
+Two details are worth knowing before writing more of these:
+
+- **Room has to share the test's clock.** By default it runs queries and fires invalidation on its
+  own executor, so a `Flow` emission lands after the assertion has already read the state. Pointing
+  `setQueryExecutor` and `setTransactionExecutor` at the test dispatcher fixes it.
+- **`runCurrent()`, never `advanceUntilIdle()`.** The repository watches for midnight with a
+  `while (true) { emit(...); delay(60_000) }` flow, so advancing the virtual clock until idle never
+  returns — the first version of this test hung until the build timed out.
 
 ## What the tiers deliberately leave out
 
@@ -115,11 +138,12 @@ commands. They are a short, deliberate manual list rather than a flaky emulator 
 
 ## A note on the Application class
 
-`HomeScreenTest` and friends run with a plain `android.app.Application` via
-`@Config(application = ...)`, not the app's own `ProcrastinationTrackerApp`. The real one opens
-the Room database in `onCreate` and starts a sync loop that never ends, which outlives the test and
-then fails the *next* one when the database closes underneath it.
+These tests run with a plain `android.app.Application` via `@Config(application = ...)`, not the
+app's own `ProcrastinationTrackerApp`. The real one opens the Room database in `onCreate` and starts
+a sync loop that never ends, which outlives the test and then fails the *next* one when the database
+closes underneath it.
 
-That is not a testing quirk — it is the cost of wiring dependencies through the `Application`
-object, and it is exactly what the dependency injection item in the [roadmap](ROADMAP.md) is meant
-to remove. Until then, the override keeps the tests honest and the reason documented.
+Dependency injection removed the reason the *ViewModels* needed that Application, but not the
+start-up work the Application still does itself. Moving that work out of `onCreate` — so the process
+does not open a database merely by existing — is the remaining piece, and it is on the
+[roadmap](ROADMAP.md).

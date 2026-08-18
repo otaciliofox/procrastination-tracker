@@ -12,13 +12,10 @@ Honest list of what the codebase is missing today.
 
 | Gap | Impact |
 |---|---|
-| Dependency versions hardcoded across four `build.gradle.kts` files | Versions drift between modules; upgrades are a manual sweep |
-| ViewModels reach the repository by casting `Application` | Makes them untestable without an Android runtime, and leaks a live database into UI tests |
 | Some UI strings live in Compose source instead of `strings.xml` | Blocks localisation; the app is Portuguese-only today |
 | `isMinifyEnabled = false` in release builds | No R8 shrinking or obfuscation; larger APK than necessary |
-| No release signing config | Release APKs cannot be produced reproducibly |
 | `TrackerHistoryModal` (700 lines) and `TrackerBoard` (462 lines) | Large composables that mix layout with formatting and aggregation |
-| ViewModels have no tests | Blocked on dependency injection — see phase 2 |
+| `Application.onCreate` opens the database and starts a sync loop | The process touches disk just by existing, which is why tests override the Application |
 
 ## Phase 1 — Automated tests ✅
 
@@ -34,17 +31,21 @@ and no emulator involved.
       tombstones, last-write-wins, local-only active profile, idempotent re-merge
 - [x] **Compose screenshot tests** — home screen, tracker board and summary card rendered, tapped
       and photographed on the JVM; PNGs uploaded by CI on every run
-- [ ] ViewModel tests (blocked on phase 2)
+- [x] ViewModel tests — real repository over an in-memory database, no Android app required
 
 ## Phase 2 — Architecture
 
-Incremental, with tests already in place. The goal is not to adopt a new pattern — the project is
-already MVVM with unidirectional state — but to close the gaps that pattern is currently paying for.
+Incremental, with tests already in place. The goal was never to adopt a new pattern — the project is
+already MVVM with unidirectional state — but to close the gaps that pattern was paying for.
 
-- [ ] **Version catalog** (`gradle/libs.versions.toml`) — single source for every dependency version
-- [ ] **Dependency injection** (Hilt) — constructor-injected repositories and ViewModels, replacing
-      the `Application` cast. Unblocks ViewModel tests, and removes the need for the
-      `@Config(application = ...)` override the screenshot tests currently need.
+- [x] **Version catalog** (`gradle/libs.versions.toml`) — single source for every dependency version
+- [x] **Dependency injection** (Hilt) — constructor-injected repositories and ViewModels across both
+      apps, replacing the `application as ProcrastinationTrackerApp` cast in all 11 places that used
+      it. Services, the tile and the Data Layer listeners are `@AndroidEntryPoint`. Verified on a
+      physical phone and watch, since the services have no automated coverage.
+- [ ] **Move start-up work out of `Application.onCreate`** — it opens the database and starts an
+      endless sync loop, so the process touches disk just by existing and tests must override the
+      Application to stay isolated
 - [ ] **Push business rules down into `:core`** — aggregation and formatting currently living in
       ViewModels and composables become pure, testable functions
 - [ ] **Split the large composables** — separate layout from data shaping in the tracker board and
@@ -57,7 +58,8 @@ already MVVM with unidirectional state — but to close the gaps that pattern is
 - [x] GitHub Actions workflow: tests and both APKs on every push and pull request
 - [x] Screenshots uploaded as a build artifact on every run
 - [x] Build status badge in the README
-- [ ] Release workflow: build a signed APK and attach it to the tag automatically
+- [x] Release workflow: signed APKs built and attached to the tag, with a check that both
+      carry the same signature
 
 ## Phase 4 — Features
 

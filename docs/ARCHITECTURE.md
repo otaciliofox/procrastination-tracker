@@ -76,19 +76,30 @@ the same path. There is no manual refresh anywhere in the codebase.
 
 ### Dependency wiring
 
-Dependencies are constructed lazily in the `Application` subclass and read by the ViewModels:
+Dependencies come from **Hilt**. Each app module has a `DataModule` that builds the databases and
+repositories once, as singletons, and everything else asks the graph for them:
 
 ```kotlin
-class ProcrastinationTrackerApp : Application() {
-    val trackerDatabase: TrackerDatabase by lazy { TrackerDatabase.build(this) }
-    val trackerRepository: TrackerRepository by lazy { TrackerRepository(trackerDatabase) }
-}
+@HiltViewModel
+class TrackerViewModel @Inject constructor(
+    private val repository: TrackerRepository,
+    @param:ApplicationContext private val context: Context
+) : ViewModel()
 ```
 
-This is manual, service-locator style wiring. It is honest about its trade-off: it costs nothing at
-runtime and needs no annotation processor, but it couples the ViewModels to a concrete `Application`
-type, which is exactly what makes them awkward to unit test. Replacing it with a real DI container
-is a tracked backlog item, not an oversight.
+Services, the quick settings tile and the Data Layer listeners are `@AndroidEntryPoint` and receive
+the same singletons by field injection.
+
+This replaced service-locator wiring, where every one of those classes read
+`application as ProcrastinationTrackerApp` to reach a lazy property. That cost nothing at runtime,
+but it meant a ViewModel could only be constructed inside a running app with that exact Application
+installed — and that Application opens the on-disk database and starts a sync loop in `onCreate`.
+The practical consequence was that the ViewModels had no tests at all. They do now, and they are
+built the ordinary way: hand the constructor a repository.
+
+The databases stay `@Singleton` deliberately. Two Room instances over one file would each keep
+their own write lock and invalidation tracker, so the UI would stop seeing writes made by the
+foreground services.
 
 ## Background execution
 
