@@ -3,8 +3,8 @@
 Current state: **both apps are functional and stable**. Timer mode and Tracker mode phase 1 are
 complete, phone ↔ watch sync works in both directions, and everything runs offline on each device.
 
-What follows is ordered by what unlocks the most: tests come before the architecture refactor,
-because tests are what make the refactor safe.
+Automated tests and CI are in place — see [TESTING.md](TESTING.md) for the strategy. The
+architecture work follows, now that there is a safety net to refactor against.
 
 ## Known gaps
 
@@ -12,27 +12,29 @@ Honest list of what the codebase is missing today.
 
 | Gap | Impact |
 |---|---|
-| No automated tests anywhere — zero `test`/`androidTest` source sets | Every regression is found by hand, on a device |
 | Dependency versions hardcoded across four `build.gradle.kts` files | Versions drift between modules; upgrades are a manual sweep |
-| ViewModels reach the repository by casting `Application` | Makes them effectively untestable without an Android runtime |
+| ViewModels reach the repository by casting `Application` | Makes them untestable without an Android runtime, and leaks a live database into UI tests |
 | Some UI strings live in Compose source instead of `strings.xml` | Blocks localisation; the app is Portuguese-only today |
 | `isMinifyEnabled = false` in release builds | No R8 shrinking or obfuscation; larger APK than necessary |
 | No release signing config | Release APKs cannot be produced reproducibly |
 | `TrackerHistoryModal` (700 lines) and `TrackerBoard` (462 lines) | Large composables that mix layout with formatting and aggregation |
+| ViewModels have no tests | Blocked on dependency injection — see phase 2 |
 
-## Phase 1 — Automated tests
+## Phase 1 — Automated tests ✅
 
-The priority. `:core` is 414 lines of pure Kotlin with no Android dependency, so its tests run on
-the JVM in seconds — the best return per line of test code in the project.
+Done. Every tier runs on the JVM, so the whole suite is a single Gradle command with no device
+and no emulator involved.
 
-- [ ] `TimerEngine` — phase transitions, long-break cadence, pause/resume, elapsed accounting
-- [ ] `TimerPlan.sanitized()` — boundary clamping for minutes and cycle counts
-- [ ] `TimerDaySummary` — productive vs. procrastinated aggregation
-- [ ] `TimeFormat` and `ActivityRules` — formatting edges and slice count limits
-- [ ] `TrackerSyncCodec` — payload round-trip, so a schema change cannot silently break sync
-- [ ] Room DAO tests for `:trackerdata` — tombstone handling and two-way merge behaviour
-- [ ] ViewModel tests (depends on Phase 2 DI)
-- [ ] Compose UI tests for the two critical flows: start/pause/switch slice, and finish a timer block
+- [x] `TimerEngine` — phase transitions, long-break cadence, pause/resume, elapsed accounting
+- [x] `TimerPlan.sanitized()` — boundary clamping for minutes and cycle counts
+- [x] `TimerDaySummary` — productive vs. procrastinated aggregation, interrupted blocks
+- [x] `TimeFormat` and `ActivityRules` — formatting edges, accent-insensitive slice naming
+- [x] `TrackerSyncCodec` — payload round-trip through the real `DataMap`
+- [x] **Watch sync merge tests** — the watch's payload against a real in-memory Room database:
+      tombstones, last-write-wins, local-only active profile, idempotent re-merge
+- [x] **Compose screenshot tests** — home screen, tracker board and summary card rendered, tapped
+      and photographed on the JVM; PNGs uploaded by CI on every run
+- [ ] ViewModel tests (blocked on phase 2)
 
 ## Phase 2 — Architecture
 
@@ -41,7 +43,8 @@ already MVVM with unidirectional state — but to close the gaps that pattern is
 
 - [ ] **Version catalog** (`gradle/libs.versions.toml`) — single source for every dependency version
 - [ ] **Dependency injection** (Hilt) — constructor-injected repositories and ViewModels, replacing
-      the `Application` cast. This is what unblocks ViewModel tests.
+      the `Application` cast. Unblocks ViewModel tests, and removes the need for the
+      `@Config(application = ...)` override the screenshot tests currently need.
 - [ ] **Push business rules down into `:core`** — aggregation and formatting currently living in
       ViewModels and composables become pure, testable functions
 - [ ] **Split the large composables** — separate layout from data shaping in the tracker board and
@@ -49,10 +52,11 @@ already MVVM with unidirectional state — but to close the gaps that pattern is
 - [ ] **Extract a design-system module** — `BoardTokens` and the palette are shared informally today
 - [ ] **Enable R8** for release builds, with the keep rules Room and Compose need
 
-## Phase 3 — Continuous integration
+## Phase 3 — Continuous integration ✅
 
-- [ ] GitHub Actions workflow: assemble both apps and run tests on every push and pull request
-- [ ] Build status badge in the README, wired to that workflow
+- [x] GitHub Actions workflow: tests and both APKs on every push and pull request
+- [x] Screenshots uploaded as a build artifact on every run
+- [x] Build status badge in the README
 - [ ] Release workflow: build a signed APK and attach it to the tag automatically
 
 ## Phase 4 — Features
@@ -72,6 +76,11 @@ Carried over from the original plan, none of them blocking.
 
 These are decided, not pending:
 
+- **Emulators in the pipeline.** Development happens on physical devices, and an emulator-based
+  instrumentation suite would add minutes of CI time and a class of failures unrelated to the
+  code. The behaviours that genuinely need hardware — foreground service survival, notification
+  actions, the tile, and Data Layer delivery between two devices — are verified by hand, and
+  listed in [TESTING.md](TESTING.md).
 - **Cloud backup and accounts** — local SQLite only; losing data on app clear is an accepted risk
 - **Play Store distribution** — the app is sideloaded, so it does not carry Play compliance work
 - **Automatic coaching or suggestions** based on tracked data — the app reports, it does not advise

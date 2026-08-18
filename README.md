@@ -7,6 +7,7 @@
 A two-mode time tracker for Android and Wear OS: the classic 52/17 and Pomodoro focus timer, plus a
 free-form category stopwatch for people whose day does not fit a fixed cycle.
 
+[![CI](https://github.com/otaciliofox/procrastination-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/otaciliofox/procrastination-tracker/actions/workflows/ci.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Wear OS](https://img.shields.io/badge/Wear%20OS-3%2B-1A73E8?logo=wearos&logoColor=white)](https://wearos.google.com)
@@ -15,7 +16,20 @@ free-form category stopwatch for people whose day does not fit a fixed cycle.
 [![Gradle](https://img.shields.io/badge/Gradle-9.7-02303A?logo=gradle&logoColor=white)](https://gradle.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[Português (pt-BR)](README.pt-BR.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
+[Português (pt-BR)](README.pt-BR.md) · [Architecture](docs/ARCHITECTURE.md) · [Testing](docs/TESTING.md) · [Roadmap](docs/ROADMAP.md)
+
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/tracker-board.png" width="300" alt="Tracker board"></td>
+<td align="center"><img src="docs/screenshots/home-screen.png" width="300" alt="Home screen"></td>
+</tr>
+<tr>
+<td align="center"><b>Tracker mode</b><br>each band's height is its share of the day</td>
+<td align="center"><b>Home</b><br>pick how you want to measure today</td>
+</tr>
+</table>
+
+<sub>These screenshots are rendered by the Compose screenshot tests, so they cannot drift from the app.</sub>
 
 </div>
 
@@ -92,6 +106,25 @@ The full reasoning is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 **Kotlin** · **Jetpack Compose** + **Material 3** · **Compose for Wear OS** · **Room** ·
 **Coroutines & Flow** · **Navigation Compose** · **Foreground Services** · **Quick Settings Tile** ·
 **Wearable Data Layer API** · **Gradle 9.7** with **AGP 9.3.1** and **KSP**
+
+## Tests
+
+Every automated test runs on the JVM — no emulator, no attached device — so the whole suite is one
+command and fits in a pipeline:
+
+```bash
+./gradlew :core:test :trackerdata:testDebugUnitTest :app:testDebugUnitTest
+```
+
+| Tier | What it covers |
+|---|---|
+| **Unit** (`:core`) | The timer state machine. Time is a parameter, so a four-cycle Pomodoro runs in microseconds instead of 150 minutes |
+| **Integration** (`:trackerdata`) | The watch's sync payload merged into a real in-memory Room database: tombstones, last-write-wins, idempotent re-merge |
+| **UI** (`:app`) | Real Compose screens rendered, tapped and photographed — the PNGs above come from these tests |
+
+What genuinely needs hardware — foreground service survival, notification actions, the tile, and
+Data Layer delivery between two devices — is verified by hand rather than by an emulator suite.
+The reasoning is in [docs/TESTING.md](docs/TESTING.md).
 
 ## Getting started
 
